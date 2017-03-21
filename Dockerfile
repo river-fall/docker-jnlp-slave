@@ -20,9 +20,13 @@
 #  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 #  THE SOFTWARE.
 
-FROM jenkinsci/slave
-MAINTAINER Nicolas De Loof <nicolas.deloof@gmail.com>
-
-COPY jenkins-slave /usr/local/bin/jenkins-slave
-
-ENTRYPOINT ["jenkins-slave"]
+FROM centos:6.8
+MAINTAINER Arseny Osipov <arseni.osipov@gmail.com>
+RUN yum install -y java-1.8.0-openjdk-devel
+RUN curl --create-dirs -sSLo /tmp/slave.jar https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${VERSION}/remoting-${VERSION}.jar \
+  && chmod 755 /usr/share/jenkins \
+  && chmod 644 /usr/share/jenkins/slave.jar
+COPY /usr/local/bin/jenkins-slave
+RUN chmod 777 /usr/local/bin/jenkins-slave
+USER jenkins
+ENTRYPOINT ["/usr/local/bin/jenkins-slave"]
